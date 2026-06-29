@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TodoApp</string>
+    <string name="onboard_one_desc">Plan your tasks to do, that way you’ll stay organized and you won’t skip any</string>
+</resources>
