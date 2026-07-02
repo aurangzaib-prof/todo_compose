@@ -11,12 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.todoapp.base.*
-import com.example.todoapp.ui.home.TasksScreen
-import com.example.todoapp.ui.login.LoginScreen
-import com.example.todoapp.ui.onboarding.OnboardingScreen
-import com.example.todoapp.ui.signup.SignupScreen
-import com.example.todoapp.ui.splash.SplashScreen
+import com.example.todoapp.ui.presentation.home.TasksScreen
+import com.example.todoapp.ui.presentation.login.LoginScreen
+import com.example.todoapp.ui.navigation.Home
+import com.example.todoapp.ui.navigation.Login
+import com.example.todoapp.ui.navigation.OnboardingOne
+import com.example.todoapp.ui.navigation.Signup
+import com.example.todoapp.ui.navigation.Splash
+import com.example.todoapp.ui.presentation.onboarding.OnboardingScreen
+import com.example.todoapp.ui.presentation.signup.SignupScreen
+import com.example.todoapp.ui.presentation.splash.SplashScreen
 import com.example.todoapp.ui.theme.TodoAppTheme
 
 class MainActivity : ComponentActivity() {

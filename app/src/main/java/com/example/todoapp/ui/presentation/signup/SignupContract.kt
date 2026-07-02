@@ -1,4 +1,4 @@
-package com.example.todoapp.ui.signup.mvi
+package com.example.todoapp.ui.presentation.signup
 
 import com.example.todoapp.base.UiEffect
 import com.example.todoapp.base.UiIntent

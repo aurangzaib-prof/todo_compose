@@ -1,4 +1,4 @@
-package com.example.todoapp.ui.splash
+package com.example.todoapp.ui.presentation.splash
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.todoapp.R
-import com.example.todoapp.base.OnboardingOne
-import com.example.todoapp.base.Splash
+import com.example.todoapp.ui.navigation.OnboardingOne
+import com.example.todoapp.ui.navigation.Splash
 import kotlinx.coroutines.delay
 
 @Composable

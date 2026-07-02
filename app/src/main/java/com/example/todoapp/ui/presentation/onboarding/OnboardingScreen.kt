@@ -1,4 +1,4 @@
-package com.example.todoapp.ui.onboarding
+package com.example.todoapp.ui.presentation.onboarding
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,9 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.todoapp.R
-import com.example.todoapp.base.Login
-import com.example.todoapp.ui.onboarding.mvi.OnboardingEffect
-import com.example.todoapp.ui.onboarding.mvi.OnboardingIntent
+import com.example.todoapp.ui.navigation.Login
 
 @Composable
 fun OnboardingScreen(
@@ -62,7 +60,7 @@ fun OnboardingScreen(
         )
         else -> OnboardingData(
             R.drawable.onboardfour,
-            "You informations are\nsecure with us",
+            "Your information is\nsecure with us",
             400, 20, R.drawable.done
         )
     }

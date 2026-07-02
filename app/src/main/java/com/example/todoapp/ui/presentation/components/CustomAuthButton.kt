@@ -1,4 +1,4 @@
-package com.example.todoapp.ui.components
+package com.example.todoapp.ui.presentation.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

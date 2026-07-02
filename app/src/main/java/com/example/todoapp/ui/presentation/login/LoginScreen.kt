@@ -1,17 +1,9 @@
-package com.example.todoapp.ui.login
+package com.example.todoapp.ui.presentation.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,13 +23,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.todoapp.R
-import com.example.todoapp.base.Home
-import com.example.todoapp.base.Login
-import com.example.todoapp.base.Signup
-import com.example.todoapp.ui.components.CustomAuthButton
-import com.example.todoapp.ui.components.CustomTextField
-import com.example.todoapp.ui.login.mvi.LoginEffect
-import com.example.todoapp.ui.login.mvi.LoginIntent
+import com.example.todoapp.ui.navigation.Home
+import com.example.todoapp.ui.navigation.Login
+import com.example.todoapp.ui.navigation.Signup
+import com.example.todoapp.ui.presentation.components.CustomAuthButton
+import com.example.todoapp.ui.presentation.components.CustomTextField
 
 @Composable
 fun LoginScreen(

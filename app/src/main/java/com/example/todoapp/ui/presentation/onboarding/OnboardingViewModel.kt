@@ -1,10 +1,8 @@
-package com.example.todoapp.ui.onboarding
+package com.example.todoapp.ui.presentation.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todoapp.ui.onboarding.mvi.OnboardingEffect
-import com.example.todoapp.ui.onboarding.mvi.OnboardingIntent
-import com.example.todoapp.ui.onboarding.mvi.OnboardingState
+import com.example.todoapp.base.MviViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -14,15 +12,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class OnboardingViewModel : ViewModel() {
+class OnboardingViewModel : ViewModel(), MviViewModel<OnboardingState, OnboardingIntent, OnboardingEffect> {
 
     private val _uiState = MutableStateFlow(OnboardingState())
-    val uiState: StateFlow<OnboardingState> = _uiState.asStateFlow()
+    override val uiState: StateFlow<OnboardingState> = _uiState.asStateFlow()
 
     private val _effect = MutableSharedFlow<OnboardingEffect>()
     val effect: SharedFlow<OnboardingEffect> = _effect.asSharedFlow()
 
-    fun onIntent(intent: OnboardingIntent) {
+    override fun onIntent(intent: OnboardingIntent) {
         when (intent) {
             OnboardingIntent.NextPage -> handleNextPage()
         }
