@@ -18,12 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.todoapp.R
-@RequiresApi
-    (Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun MainScreen() {
-
     val navController = rememberNavController()
 
     Scaffold(

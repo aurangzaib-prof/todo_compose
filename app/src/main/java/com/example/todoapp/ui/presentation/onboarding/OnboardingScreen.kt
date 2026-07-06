@@ -48,16 +48,19 @@ fun OnboardingScreen(
             "Plan your tasks to do, that\nway you’ll stay organized\nand you won’t skip any",
             400, 40, R.drawable.next_button
         )
+
         1 -> OnboardingData(
             R.drawable.onboardtwo,
             "Make a full schedule for\nthe whole week and stay\norganized and productive\nall days",
             300, 40, R.drawable.next_button
         )
+
         2 -> OnboardingData(
             R.drawable.onboardthree,
             "Create a team task, invite\npeople and manage your\nwork together",
             260, 118, R.drawable.next_button
         )
+
         else -> OnboardingData(
             R.drawable.onboardfour,
             "Your information is\nsecure with us",
@@ -78,7 +81,9 @@ fun OnboardingScreen(
             ),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(top = 100.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -109,7 +114,6 @@ fun OnboardingScreen(
                     painter = painterResource(R.drawable.slider_threedot),
                     contentDescription = null
                 )
-
                 Image(
                     painter = painterResource(data.buttonRes),
                     contentDescription = null,

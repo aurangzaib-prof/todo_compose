@@ -23,7 +23,7 @@ fun BottomBar(navController: NavHostController) {
 
     val items = listOf(
         BottomNavItem.Home,
-        BottomNavItem.TaskDetail,
+        BottomNavItem.TaskScreen,
         BottomNavItem.Calender,
         BottomNavItem.Settings,
     )
