@@ -34,7 +34,8 @@ fun SheetTextField(
         leadingIcon = {
             Icon(
                 painterResource
-                    (R.drawable.desc_leading), "desc", modifier = modifier.padding(bottom = 40.dp)
+                    (R.drawable.desc_leading), "desc",
+                modifier = modifier.padding(bottom = 40.dp)
             )
         },
         modifier = modifier

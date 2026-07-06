@@ -1,40 +1,49 @@
 package com.example.todoapp.ui.presentation.login
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todoapp.base.MviViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.example.todoapp.base.BaseViewModel
+import com.example.todoapp.data.local.datastore.PreferenceManager
+import com.example.todoapp.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel(), MviViewModel<LoginState, LoginIntent, LoginEffect> {
-
-    private val _uiState = MutableStateFlow(LoginState())
-    override val uiState: StateFlow<LoginState> = _uiState.asStateFlow()
-
-    private val _effect = MutableSharedFlow<LoginEffect>()
-    val effect: SharedFlow<LoginEffect> = _effect.asSharedFlow()
+class LoginViewModel(
+    private val authRepository: AuthRepository,
+    private val preferenceManager: PreferenceManager
+) : BaseViewModel<LoginState, LoginIntent, LoginEffect>(
+    LoginState()
+) {
 
     override fun onIntent(intent: LoginIntent) {
         when (intent) {
             is LoginIntent.EmailChanged -> {
-                _uiState.update { it.copy(email = intent.email) }
+                updateState { it.copy(email = intent.email) }
+            }
+            is LoginIntent.PasswordChanged -> {
+                updateState { it.copy(password = intent.password) }
             }
             LoginIntent.LoginClicked -> handleLogin()
             LoginIntent.SignupClicked -> {
-                viewModelScope.launch { _effect.emit(LoginEffect.NavigateToSignup) }
+                sendEffect(LoginEffect.NavigateToSignup)
             }
         }
     }
 
     private fun handleLogin() {
+        if (currentState.email.isBlank() || currentState.password.isBlank()) {
+            updateState { it.copy(error = "Please fill all fields") }
+            return
+        }
+
+        updateState { it.copy(isLoading = true, error = null) }
+        
         viewModelScope.launch {
-            _effect.emit(LoginEffect.NavigateToHome)
+            val result = authRepository.login(currentState.email, currentState.password) 
+            if (result.isSuccess) {
+                preferenceManager.saveLogin(true)
+                sendEffect(LoginEffect.NavigateToHome)
+            } else {
+                updateState { it.copy(isLoading = false, error = result.exceptionOrNull()?.message ?: "Login failed") }
+            }
         }
     }
 }

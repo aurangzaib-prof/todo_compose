@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.ksp)
 }
 
 android {
@@ -46,6 +47,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    add("ksp", libs.androidx.room.compiler)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -63,5 +68,6 @@ dependencies {
     implementation(libs.kotlinx.serialization)
 //    navigation
     implementation(libs.androidx.navigation.compose)
+    implementation("com.kizitonwose.calendar:compose:2.5.0")
 
 }

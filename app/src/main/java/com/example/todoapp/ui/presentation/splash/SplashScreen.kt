@@ -22,18 +22,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.todoapp.R
-import com.example.todoapp.ui.navigation.OnboardingOne
-import com.example.todoapp.ui.navigation.Splash
+import com.example.todoapp.base.Home
+import com.example.todoapp.base.OnboardingOne
+import com.example.todoapp.base.Splash
 import kotlinx.coroutines.delay
-
+import org.koin.androidx.compose.koinViewModel
 @Composable
-fun SplashScreen(navController: NavHostController) {
+fun SplashScreen(
+    navController: NavHostController,
+    viewModel: SplashViewModel = koinViewModel()
+) {
     LaunchedEffect(Unit) {
-        delay(2000)
-        navController.navigate(OnboardingOne) {
-            popUpTo(Splash) { inclusive = true }
+        viewModel.effect.collect { effect ->
+            delay(2000)
+            when (effect) {
+                SplashEffect.NavigateToHome -> {
+                    navController.navigate(Home) {
+                        popUpTo(Splash) { inclusive = true }
+                    }
+                }
+                SplashEffect.NavigateToOnboarding -> {
+                    navController.navigate(OnboardingOne) {
+                        popUpTo(Splash) { inclusive = true }
+                    }
+                }
+            }
         }
     }
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -46,7 +62,6 @@ fun SplashScreen(navController: NavHostController) {
                 )
             ), contentAlignment = Alignment.Center
     ) {
-
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(R.drawable.checkmark), "check",
@@ -56,6 +71,5 @@ fun SplashScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.padding(top = 20.dp))
             Text("Do it", fontSize = 44.sp, color = Color.White, fontFamily = FontFamily.Serif)
         }
-
     }
 }

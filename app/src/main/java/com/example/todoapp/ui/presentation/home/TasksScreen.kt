@@ -57,12 +57,20 @@ fun showUi() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TasksScreen(navController: NavHostController) {
-    var showBottomSheet by rememberSaveable { mutableStateOf(true) }
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        floatingActionButton = {
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(R.color.bg_top_color),
+                        colorResource(R.color.bg_bottom_color)
+                    )
+                )
+            ), floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     showBottomSheet = true
@@ -72,20 +80,11 @@ fun TasksScreen(navController: NavHostController) {
             ) {
                 Image(painter = painterResource(R.drawable.plus_icon), "plus")
             }
-        },
-        containerColor = Color.Transparent
+        }, containerColor = Color.Transparent
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            colorResource(id = R.color.bg_top_color),
-                            colorResource(id = R.color.bg_bottom_color)
-                        )
-                    )
-                )
                 .padding(innerPadding),
         ) {
             Column(
@@ -103,10 +102,7 @@ fun TasksScreen(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     CustomSearchBar(
-                        modifier = Modifier.weight(1f),
-                        query = "",
-                        onQueryChange = {}
-                    )
+                        modifier = Modifier.weight(1f), query = "", onQueryChange = {})
 
                     Button(
                         onClick = {},
@@ -136,9 +132,7 @@ fun TasksScreen(navController: NavHostController) {
                 }
                 Spacer(modifier = Modifier.height(30.dp))
                 Text(
-                    "Tasks list",
-                    color = colorResource(R.color.white),
-                    fontSize = 22.sp
+                    "Tasks list", color = colorResource(R.color.white), fontSize = 22.sp
                 )
             }
 
@@ -146,21 +140,22 @@ fun TasksScreen(navController: NavHostController) {
                 ModalBottomSheet(
                     onDismissRequest = {
                         showBottomSheet = false
-                    },
-                    sheetState = sheetState,
-                    containerColor = colorResource(id = R.color.white)
+                    }, sheetState = sheetState, containerColor = colorResource(id = R.color.white)
                 ) {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth(), contentAlignment = Alignment.Center
+                        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(10.dp),
                         ) {
-                            TaskTitleTextField(value = "", onValueChange = {
-                            }, modifier = Modifier, hint = "Task title...")
+                            TaskTitleTextField(
+                                value = "",
+                                onValueChange = {},
+                                modifier = Modifier,
+                                hint = "Task title..."
+                            )
 
                             Spacer(modifier = Modifier.height(10.dp))
                             SheetTextField(
@@ -180,17 +175,13 @@ fun TasksScreen(navController: NavHostController) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 CustomSheetButton(
-                                    text = "Date",
-                                    onClick = {},
-                                    icon = R.drawable.calender_ic
+                                    text = "Date", onClick = {}, icon = R.drawable.calender_ic
                                 )
 
                                 Spacer(modifier = Modifier.width(10.dp))
 
                                 CustomSheetButton(
-                                    text = "Time",
-                                    onClick = {},
-                                    icon = R.drawable.clock_ic
+                                    text = "Time", onClick = {}, icon = R.drawable.clock_ic
                                 )
 
                             }
@@ -206,8 +197,7 @@ fun TasksScreen(navController: NavHostController) {
                                 Button(
                                     onClick = { },
                                     border = BorderStroke(
-                                        2.dp,
-                                        colorResource(R.color.btn_border_color)
+                                        2.dp, colorResource(R.color.btn_border_color)
                                     ),
                                     modifier = Modifier.size(width = 170.dp, height = 45.dp),
                                     colors = ButtonDefaults.buttonColors(
@@ -218,9 +208,7 @@ fun TasksScreen(navController: NavHostController) {
                                 ) {
 
                                     Text(
-                                        text = "Cancel",
-                                        color = Color.Black,
-                                        fontSize = 16.sp
+                                        text = "Cancel", color = Color.Black, fontSize = 16.sp
                                     )
                                 }
 
@@ -237,9 +225,7 @@ fun TasksScreen(navController: NavHostController) {
                                 ) {
 
                                     Text(
-                                        text = "Create",
-                                        color = Color.White,
-                                        fontSize = 16.sp
+                                        text = "Create", color = Color.White, fontSize = 16.sp
                                     )
                                 }
                             }

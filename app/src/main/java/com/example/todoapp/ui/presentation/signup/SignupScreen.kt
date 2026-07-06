@@ -1,9 +1,11 @@
 package com.example.todoapp.ui.presentation.signup
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,33 +22,35 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.todoapp.R
-import com.example.todoapp.ui.navigation.Home
-import com.example.todoapp.ui.navigation.Login
+import com.example.todoapp.base.Home
+import com.example.todoapp.base.Login
 import com.example.todoapp.ui.presentation.components.CustomAuthButton
 import com.example.todoapp.ui.presentation.components.CustomTextField
-
+import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SignupScreen(
     navController: NavHostController,
-    viewModel: SignupViewModel = viewModel()
+    viewModel: SignupViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
-            when (effect) {
-                SignupEffect.NavigateToLogin -> {
+
+            Log.d("effect_state", effect.toString())
                     navController.navigate(Login)
-                }
-                SignupEffect.NavigateToHome -> {
-                    navController.navigate(Home) {
-                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                    }
-                }
-            }
+            state.isLoading = false
+//            when (effect) {
+//                SignupEffect.NavigateToLogin -> {
+//                }
+//                SignupEffect.NavigateToHome -> {
+//                    navController.navigate(Home) {
+//                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+//                    }
+//                }
+//            }
         }
     }
 
@@ -95,7 +99,17 @@ fun SignupScreen(
                 modifier = Modifier.padding(start = 20.dp)
             )
 
-            Spacer(modifier = Modifier.padding(top = 40.dp))
+            Spacer(modifier = Modifier.padding(top = 20.dp))
+            
+            if (state.error != null) {
+                Text(
+                    text = state.error!!,
+                    color = Color.Red,
+                    modifier = Modifier.padding(start = 20.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.padding(top = 20.dp))
             CustomTextField(
                 value = state.name,
                 onValueChange = { viewModel.onIntent(SignupIntent.NameChanged(it)) },
@@ -130,12 +144,22 @@ fun SignupScreen(
                         contentDescription = "Pass Icon",
                     )
                 })
+            
             Spacer(modifier = Modifier.padding(top = 20.dp))
-            CustomAuthButton(
-                onClick = { viewModel.onIntent(SignupIntent.SignupClicked) },
-                modifier = Modifier.fillMaxWidth(),
-                text = "Sign Up"
-            )
+            
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    color = Color.White
+                )
+            } else {
+                CustomAuthButton(
+                    onClick = { viewModel.onIntent(SignupIntent.SignupClicked) },
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Sign Up"
+                )
+            }
+
             Spacer(modifier = Modifier.padding(top = 20.dp))
 
             Row(

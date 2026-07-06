@@ -8,7 +8,7 @@ data class SignupState(
     val name: String = "",
     val email: String = "",
     val password: String = "",
-    val isLoading: Boolean = false,
+    var isLoading: Boolean = false,
     val error: String? = null
 ) : UiState
 

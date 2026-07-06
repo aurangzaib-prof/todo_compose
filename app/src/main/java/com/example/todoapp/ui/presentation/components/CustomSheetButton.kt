@@ -16,7 +16,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todoapp.R
-
 @Composable
 fun CustomSheetButton(
     text: String,
@@ -35,7 +34,7 @@ fun CustomSheetButton(
         Image(
             painter = painterResource(icon),
             contentDescription = null,
-            modifier = Modifier.size(25.dp) // Increase icon size here
+            modifier = Modifier.size(25.dp)
         )
 
         Spacer(modifier = Modifier.width(15.dp))

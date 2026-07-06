@@ -23,6 +23,8 @@
 
     <color name="btn_border_color">#0EA5E9</color>
     <color name="edit_btns_bg_color">#05243E</color>
+    <color name="back_btn_bg">#63D9F3</color>
+    <color name="save_btn">#0EA5E9</color>
 
 
 </resources>

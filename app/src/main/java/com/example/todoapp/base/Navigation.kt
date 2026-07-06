@@ -1,4 +1,4 @@
-package com.example.todoapp.ui.navigation
+package com.example.todoapp.base
 
 import kotlinx.serialization.Serializable
 

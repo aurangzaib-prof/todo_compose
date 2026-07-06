@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,30 +21,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.todoapp.R
-import com.example.todoapp.ui.navigation.Home
-import com.example.todoapp.ui.navigation.Login
-import com.example.todoapp.ui.navigation.Signup
+import com.example.todoapp.base.Home
+import com.example.todoapp.base.Login
+import com.example.todoapp.base.Signup
 import com.example.todoapp.ui.presentation.components.CustomAuthButton
 import com.example.todoapp.ui.presentation.components.CustomTextField
+import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavHostController,
-    viewModel: LoginViewModel = viewModel()
+    viewModel: LoginViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.effect.collect { effect ->
+        viewModel.effect.collectLatest { effect ->
             when (effect) {
                 LoginEffect.NavigateToHome -> {
                     navController.navigate(Home) {
-                        popUpTo(Login) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
+
                 LoginEffect.NavigateToSignup -> {
                     navController.navigate(Signup)
                 }
@@ -96,7 +100,17 @@ fun LoginScreen(
                 modifier = Modifier.padding(start = 20.dp)
             )
 
-            Spacer(modifier = Modifier.padding(top = 40.dp))
+            Spacer(modifier = Modifier.padding(top = 20.dp))
+
+            if (state.error != null) {
+                Text(
+                    text = state.error!!,
+                    color = Color.Red,
+                    modifier = Modifier.padding(start = 20.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.padding(top = 20.dp))
 
             CustomTextField(
                 value = state.email,
@@ -111,8 +125,8 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.padding(top = 20.dp))
             CustomTextField(
-                value = "",
-                onValueChange = { },
+                value = state.password,
+                onValueChange = { viewModel.onIntent(LoginIntent.PasswordChanged(it)) },
                 hint = "Password",
                 leadingIcon = {
                     Icon(
@@ -120,12 +134,21 @@ fun LoginScreen(
                         contentDescription = "Pass Icon",
                     )
                 })
+
             Spacer(modifier = Modifier.padding(top = 20.dp))
-            CustomAuthButton(
-                onClick = { viewModel.onIntent(LoginIntent.LoginClicked) },
-                modifier = Modifier.fillMaxWidth(),
-                text = "Sign In"
-            )
+
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    color = Color.White
+                )
+            } else {
+                CustomAuthButton(
+                    onClick = { viewModel.onIntent(LoginIntent.LoginClicked) },
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Sign In"
+                )
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth()

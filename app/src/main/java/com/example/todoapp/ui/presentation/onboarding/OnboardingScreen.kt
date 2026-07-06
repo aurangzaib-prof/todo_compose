@@ -18,15 +18,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.todoapp.R
-import com.example.todoapp.ui.navigation.Login
+import com.example.todoapp.base.Login
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun OnboardingScreen(
     navController: NavHostController,
-    viewModel: OnboardingViewModel = viewModel()
+    viewModel: OnboardingViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
 
