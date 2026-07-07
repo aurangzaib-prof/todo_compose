@@ -1,5 +1,6 @@
 package com.example.todoapp.ui.presentation.home
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,23 +18,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +56,9 @@ import com.example.todoapp.ui.presentation.components.CustomSearchBar
 import com.example.todoapp.ui.presentation.components.CustomSheetButton
 import com.example.todoapp.ui.presentation.components.SheetTextField
 import com.example.todoapp.ui.presentation.components.TaskTitleTextField
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Preview(showBackground = true)
 @Composable
@@ -57,8 +70,15 @@ fun showUi() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TasksScreen(navController: NavHostController) {
-    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var showBottomSheet by rememberSaveable { mutableStateOf(true) }
     val sheetState = rememberModalBottomSheetState()
+    val context = LocalContext.current
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    var showTimePicker by remember { mutableStateOf(false) }
+
 
     Scaffold(
         modifier = Modifier
@@ -87,6 +107,117 @@ fun TasksScreen(navController: NavHostController) {
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
+
+
+            val timePickerState = rememberTimePickerState(
+                initialHour = 12,
+                initialMinute = 0,
+                is24Hour = false
+            )
+            if (showTimePicker) {
+
+
+                AlertDialog(
+                    onDismissRequest = {
+                        showTimePicker = false
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                val hour = timePickerState.hour
+                                val minute = timePickerState.minute
+
+
+                                val hour12 = when {
+                                    hour == 0 -> 12
+                                    hour > 12 -> hour - 12
+                                    else -> hour
+                                }
+
+                                val amPm = if (hour < 12) "AM" else "PM"
+
+                                Toast.makeText(
+                                    context,
+                                    String.format(
+                                        "Selected time: %d:%02d %s",
+                                        hour12,
+                                        minute,
+                                        amPm
+                                    ),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                showTimePicker = false
+                            }
+                        ) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                showTimePicker = false
+                            }
+                        ) {
+                            Text("Cancel")
+                        }
+                    },
+                    text = {
+                        TimePicker(
+                            state = timePickerState
+                        )
+                    }
+                )
+
+
+            }
+
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = {
+                        showDatePicker = false
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                val selectedDate = datePickerState.selectedDateMillis
+
+                                selectedDate?.let {
+                                    val formatter = SimpleDateFormat(
+                                        "dd/MM/yyyy",
+                                        Locale.getDefault()
+                                    )
+
+                                    val formattedDate = formatter.format(Date(it))
+
+
+                                    Toast.makeText(
+                                        context,
+                                        "Selected date: $formattedDate",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                                showDatePicker = false
+                            }
+                        ) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                showDatePicker = false
+                            }
+                        ) {
+                            Text("Cancel")
+                        }
+                    }
+                ) {
+                    DatePicker(
+                        state = datePickerState
+                    )
+                }
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -140,7 +271,8 @@ fun TasksScreen(navController: NavHostController) {
                 ModalBottomSheet(
                     onDismissRequest = {
                         showBottomSheet = false
-                    }, sheetState = sheetState, containerColor = colorResource(id = R.color.white)
+                    }, sheetState = sheetState,
+                    containerColor = colorResource(id = R.color.white)
                 ) {
                     Box(
                         modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
@@ -174,14 +306,19 @@ fun TasksScreen(navController: NavHostController) {
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+
                                 CustomSheetButton(
-                                    text = "Date", onClick = {}, icon = R.drawable.calender_ic
+                                    text = "Date", onClick = {
+                                        showDatePicker = true
+                                    }, icon = R.drawable.calender_ic
                                 )
 
                                 Spacer(modifier = Modifier.width(10.dp))
 
                                 CustomSheetButton(
-                                    text = "Time", onClick = {}, icon = R.drawable.clock_ic
+                                    text = "Time", onClick = {
+                                        showTimePicker = true
+                                    }, icon = R.drawable.clock_ic
                                 )
 
                             }
@@ -237,5 +374,7 @@ fun TasksScreen(navController: NavHostController) {
                 }
             }
         }
+
     }
+
 }

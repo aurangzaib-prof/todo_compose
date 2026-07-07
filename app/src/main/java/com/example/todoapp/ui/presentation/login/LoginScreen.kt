@@ -19,9 +19,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.todoapp.R
 import com.example.todoapp.base.Home
 import com.example.todoapp.base.Login
@@ -31,13 +34,22 @@ import com.example.todoapp.ui.presentation.components.CustomTextField
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
+
+@Composable
+@Preview(showBackground = true)
+fun showUi() {
+    LoginContent(
+        state = LoginState(),
+        onIntent = {}
+    )
+}
+
 @Composable
 fun LoginScreen(
     navController: NavHostController,
     viewModel: LoginViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
@@ -55,6 +67,17 @@ fun LoginScreen(
         }
     }
 
+    LoginContent(
+        state = state,
+        onIntent = { viewModel.onIntent(it) }
+    )
+}
+
+@Composable
+fun LoginContent(
+    state: LoginState,
+    onIntent: (LoginIntent) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -114,19 +137,21 @@ fun LoginScreen(
 
             CustomTextField(
                 value = state.email,
-                onValueChange = { viewModel.onIntent(LoginIntent.EmailChanged(it)) },
+                onValueChange = { onIntent(LoginIntent.EmailChanged(it)) },
                 hint = "Email",
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.email_leading_ic),
                         contentDescription = "Email Icon",
                     )
-                })
+                },
+
+            )
 
             Spacer(modifier = Modifier.padding(top = 20.dp))
             CustomTextField(
                 value = state.password,
-                onValueChange = { viewModel.onIntent(LoginIntent.PasswordChanged(it)) },
+                onValueChange = { onIntent(LoginIntent.PasswordChanged(it)) },
                 hint = "Password",
                 leadingIcon = {
                     Icon(
@@ -144,7 +169,7 @@ fun LoginScreen(
                 )
             } else {
                 CustomAuthButton(
-                    onClick = { viewModel.onIntent(LoginIntent.LoginClicked) },
+                    onClick = { onIntent(LoginIntent.LoginClicked) },
                     modifier = Modifier.fillMaxWidth(),
                     text = "Sign In"
                 )
@@ -169,7 +194,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .padding(start = 5.dp)
                         .clickable {
-                            viewModel.onIntent(LoginIntent.SignupClicked)
+                            onIntent(LoginIntent.SignupClicked)
                         },
                 )
             }

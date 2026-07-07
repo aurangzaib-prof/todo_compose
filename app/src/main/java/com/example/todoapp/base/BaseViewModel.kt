@@ -34,4 +34,5 @@ abstract class BaseViewModel<state : UiState, intent : UiIntent, effect : UiEffe
             _effect.emit(effect)
         }
     }
+
 }

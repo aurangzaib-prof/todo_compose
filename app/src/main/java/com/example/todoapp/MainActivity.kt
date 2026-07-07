@@ -27,7 +27,6 @@ import com.example.todoapp.ui.theme.TodoAppTheme
 
 import androidx.activity.SystemBarStyle
 import android.graphics.Color as AndroidColor
-
 class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)

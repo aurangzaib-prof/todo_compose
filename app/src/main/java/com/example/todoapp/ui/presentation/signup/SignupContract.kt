@@ -12,6 +12,7 @@ data class SignupState(
     val error: String? = null
 ) : UiState
 
+
 sealed class SignupIntent : UiIntent {
     data class NameChanged(val name: String) : SignupIntent()
     data class EmailChanged(val email: String) : SignupIntent()

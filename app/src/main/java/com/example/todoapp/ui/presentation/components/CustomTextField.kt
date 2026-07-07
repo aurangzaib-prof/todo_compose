@@ -33,7 +33,9 @@ fun CustomTextField(
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
             focusedBorderColor = Color.Black,
-            unfocusedBorderColor = Color.Black
-        )
+            unfocusedBorderColor = Color.Black,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black
+        ),
     )
 }

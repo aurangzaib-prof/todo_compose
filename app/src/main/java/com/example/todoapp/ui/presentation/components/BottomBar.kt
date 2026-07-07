@@ -17,7 +17,6 @@ import com.example.todoapp.ui.navigation.BottomNavItem
 import androidx.compose.ui.graphics.Color
 
 import androidx.compose.ui.unit.dp
-
 @Composable
 fun BottomBar(navController: NavHostController) {
 

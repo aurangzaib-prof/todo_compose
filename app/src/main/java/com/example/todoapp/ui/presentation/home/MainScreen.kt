@@ -11,19 +11,18 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.todoapp.ui.navigation.AppNavGraph
 import com.example.todoapp.ui.presentation.components.BottomBar
-
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.todoapp.R
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()

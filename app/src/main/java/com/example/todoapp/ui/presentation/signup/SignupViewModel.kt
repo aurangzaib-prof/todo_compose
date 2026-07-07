@@ -33,7 +33,7 @@ class SignupViewModel(
         }
 
         updateState { it.copy(isLoading = true, error = null) }
-        
+
         val user = User(
             email = currentState.email,
             name = currentState.name,
@@ -46,7 +46,12 @@ class SignupViewModel(
                 preferenceManager.saveLogin(true)
                 sendEffect(SignupEffect.NavigateToHome)
             } else {
-                updateState { it.copy(isLoading = false, error = result.exceptionOrNull()?.message ?: "Signup failed") }
+                updateState {
+                    it.copy(
+                        isLoading = false,
+                        error = result.exceptionOrNull()?.message ?: "Signup failed"
+                    )
+                }
             }
         }
     }

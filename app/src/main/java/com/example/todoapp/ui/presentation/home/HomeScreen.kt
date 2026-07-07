@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todoapp.R
 
+@Preview(showBackground = true)
 @Composable
 fun HomeScreen() {
     Column(
@@ -77,8 +78,6 @@ fun HomeScreen() {
         )
     }
 }
-
-
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {

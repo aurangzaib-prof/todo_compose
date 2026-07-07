@@ -6,7 +6,8 @@ import kotlinx.coroutines.flow.first
 
 class UserPreferenceRepositoryImpl(
     private val preferenceManager: PreferenceManager
-) : UserPreferenceRepository {
+)
+    : UserPreferenceRepository {
 
     override suspend fun isOnboardingCompleted(): Boolean {
 
