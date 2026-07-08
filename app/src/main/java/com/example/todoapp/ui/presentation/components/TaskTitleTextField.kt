@@ -20,7 +20,8 @@ fun TaskTitleTextField(
     onValueChange: (String) -> Unit,
     hint: String,
     modifier: Modifier = Modifier,
-    leadingIcon: (@Composable () -> Unit)? = null,
+    isCompleted: Boolean = false,
+    onCheckedChange: (Boolean) -> Unit = {}
 ) {
     OutlinedTextField(
         value = value,
@@ -30,8 +31,8 @@ fun TaskTitleTextField(
         singleLine = true,
         leadingIcon = {
             Checkbox(
-                false,
-                onCheckedChange = {},
+                isCompleted,
+                onCheckedChange =  onCheckedChange ,
                 colors = CheckboxDefaults.colors(
                     checkedColor = Color.White,
                     uncheckedColor = Color.White

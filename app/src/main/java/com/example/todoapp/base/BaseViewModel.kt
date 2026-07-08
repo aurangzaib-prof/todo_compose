@@ -19,6 +19,7 @@ abstract class BaseViewModel<
     initialState: STATE
 ) : ViewModel(), MviViewModel<STATE, INTENT, EFFECT> {
 
+
     private val _uiState = MutableStateFlow(initialState)
     override val uiState: StateFlow<STATE> = _uiState.asStateFlow()
 
@@ -31,7 +32,6 @@ abstract class BaseViewModel<
     protected fun updateState(reducer: (STATE) -> STATE) {
         _uiState.update(reducer)
     }
-
     protected fun sendEffect(effect: EFFECT) {
         viewModelScope.launch {
             _effect.emit(effect)

@@ -60,13 +60,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-    //    koin
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.test)
     implementation(libs.koin.android.test)
-//    serialization
     implementation(libs.kotlinx.serialization)
-//    navigation
     implementation(libs.androidx.navigation.compose)
     implementation("com.kizitonwose.calendar:compose:2.5.0")
 

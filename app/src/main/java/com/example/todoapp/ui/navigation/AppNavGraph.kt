@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.todoapp.ui.presentation.home.CalenderScreen
+import com.example.todoapp.ui.presentation.calender_screen.CalenderScreen
 import com.example.todoapp.ui.presentation.home.HomeScreen
 import com.example.todoapp.ui.presentation.task_screen.TasksScreen
 @RequiresApi(Build.VERSION_CODES.O)

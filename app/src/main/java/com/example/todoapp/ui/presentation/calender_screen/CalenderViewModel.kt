@@ -1,6 +1,5 @@
-package com.example.todoapp.ui.presentation.task_screen
+package com.example.todoapp.ui.presentation.calender_screen
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.base.BaseViewModel
 import com.example.todoapp.data.local.room.todo_database.TodoEntity
@@ -12,38 +11,15 @@ import com.example.todoapp.ui.presentation.todo.TodoState
 import com.example.todoapp.ui.utils.Utils.formatDate
 import kotlinx.coroutines.launch
 
-class TodoViewModel(
+class CalenderViewModel(
     private val addTodoUseCase: AddTodoUseCase,
-    private val getAllTodosUseCase: GetAllTodosUseCase
 ) : BaseViewModel<TodoState, TodoIntent, TodoEffect>(
     TodoState()
 ) {
 
-    init {
-        getAllTodos()
-    }
-
     override fun onIntent(intent: TodoIntent) {
 
         when (intent) {
-
-            is TodoIntent.TitleChanged -> {
-                updateState {
-                    it.copy(
-                        title = intent.title
-                    )
-                }
-            }
-
-            is TodoIntent.TimeSelected -> {
-                updateState {
-                    it.copy(selectedTime = intent.time)
-                }
-
-                sendEffect(
-                    TodoEffect.ShowToast("Time selected: ${intent.time}")
-                )
-            }
 
             is TodoIntent.DateSelected -> {
                 updateState {
@@ -54,16 +30,6 @@ class TodoViewModel(
                     TodoEffect.ShowToast("Date selected: ${formatDate(intent.date)}")
                 )
             }
-
-
-            is TodoIntent.DescriptionChanged -> {
-                updateState {
-                    it.copy(
-                        description = intent.description
-                    )
-                }
-            }
-
 
             is TodoIntent.CompletedChanged -> {
                 updateState {
@@ -83,20 +49,11 @@ class TodoViewModel(
                     TodoState()
                 }
             }
+
+            else -> {}
         }
     }
 
-    private fun getAllTodos() {
-        viewModelScope.launch {
-            getAllTodosUseCase().collect { todos ->
-                updateState { state ->
-                    state.copy(
-                        todos = todos
-                    )
-                }
-            }
-        }
-    }
 
     private fun saveTodo() {
 
@@ -119,10 +76,6 @@ class TodoViewModel(
                     return@launch
                 }
 
-                todo.time.isNullOrBlank() -> {
-                    sendEffect(TodoEffect.ShowToast("Please select a time"))
-                    return@launch
-                }
             }
 
             addTodoUseCase(todo)

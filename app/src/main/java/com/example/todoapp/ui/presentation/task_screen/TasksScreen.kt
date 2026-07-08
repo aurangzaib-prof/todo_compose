@@ -1,30 +1,40 @@
 package com.example.todoapp.ui.presentation.task_screen
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
 import com.example.todoapp.R
 import com.example.todoapp.ui.presentation.components.*
 import com.example.todoapp.ui.presentation.todo.TodoEffect
 import com.example.todoapp.ui.presentation.todo.TodoIntent
 import com.example.todoapp.ui.utils.Utils.formatTime
+
+@Preview(showBackground = true)
+@Composable
+fun showUi() {
+    TasksScreen(navController = rememberNavController(), viewModel = koinViewModel())
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,11 +43,8 @@ fun TasksScreen(
     navController: NavHostController,
     viewModel: TodoViewModel = koinViewModel()
 ) {
-
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
     val context = LocalContext.current
-
 
     var showBottomSheet by remember {
         mutableStateOf(true)
@@ -62,16 +69,10 @@ fun TasksScreen(
         is24Hour = false
     )
 
-
-    // Effects
     LaunchedEffect(Unit) {
-
         viewModel.effect.collect { effect ->
-
-            when(effect) {
-
+            when (effect) {
                 is TodoEffect.ShowToast -> {
-
                     Toast.makeText(
                         context,
                         effect.message,
@@ -85,7 +86,6 @@ fun TasksScreen(
 
 
     Scaffold(
-
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -105,29 +105,21 @@ fun TasksScreen(
                 },
                 containerColor = colorResource(R.color.fab_color)
             ) {
-
                 Image(
                     painter = painterResource(R.drawable.plus_icon),
                     contentDescription = null
                 )
             }
         },
-
         containerColor = Color.Transparent
 
     ) { padding ->
-
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-
-
-            // DATE PICKER
-
-            if(showDatePicker){
+            if (showDatePicker) {
 
                 DatePickerDialog(
 
@@ -139,7 +131,6 @@ fun TasksScreen(
 
                         TextButton(
                             onClick = {
-
                                 datePickerState
                                     .selectedDateMillis
                                     ?.let {
@@ -148,12 +139,9 @@ fun TasksScreen(
                                             TodoIntent.DateSelected(it)
                                         )
                                     }
-
-
-                                showDatePicker=false
+                                showDatePicker = false
                             }
-                        ){
-
+                        ) {
                             Text("OK")
                         }
                     },
@@ -162,15 +150,15 @@ fun TasksScreen(
 
                         TextButton(
                             onClick = {
-                                showDatePicker=false
+                                showDatePicker = false
                             }
-                        ){
+                        ) {
 
                             Text("Cancel")
                         }
                     }
 
-                ){
+                ) {
 
                     DatePicker(
                         state = datePickerState
@@ -178,59 +166,45 @@ fun TasksScreen(
                 }
             }
 
-
-
-            // TIME PICKER
-
-            if(showTimePicker){
+            if (showTimePicker) {
 
                 AlertDialog(
 
                     onDismissRequest = {
-                        showTimePicker=false
+                        showTimePicker = false
                     },
 
                     confirmButton = {
 
                         TextButton(
                             onClick = {
-
-
                                 val time = formatTime(
                                     timePickerState.hour,
                                     timePickerState.minute
                                 )
 
-
                                 viewModel.onIntent(
                                     TodoIntent.TimeSelected(time)
                                 )
-
-
-                                showTimePicker=false
+                                showTimePicker = false
                             }
-                        ){
+                        ) {
 
                             Text("OK")
                         }
                     },
 
-
                     dismissButton = {
-
                         TextButton(
                             onClick = {
-                                showTimePicker=false
+                                showTimePicker = false
                             }
-                        ){
+                        ) {
 
                             Text("Cancel")
                         }
                     },
-
-
                     text = {
-
                         TimePicker(
                             state = timePickerState
                         )
@@ -239,137 +213,110 @@ fun TasksScreen(
             }
 
 
-
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 10.dp)
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    CustomSearchBar(query = "", onQueryChange = {}, modifier = Modifier)
 
-
+                    SortButton(
+                        text = "Sort by",
+                        icon = R.drawable.sort_btn_icon,
+                        onClick = {},
+                    )
+                }
                 Spacer(
                     modifier = Modifier.height(40.dp)
                 )
-
-
                 Text(
                     text = "Tasks list",
                     color = Color.White,
-                    fontSize = 22.sp
+                    fontSize = 19.sp, modifier = Modifier.padding(start = 10.dp)
+                )
+                Log.d("getTodoFromui", state.todos.toString())
+                Spacer(
+                    modifier = Modifier.height(10.dp)
                 )
 
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    items(state.todos) { todo ->
+                        TodoCard(todo)
+                    }
+                }
             }
 
-
-
-            // BOTTOM SHEET
-
-            if(showBottomSheet){
-
-
+            if (showBottomSheet) {
                 ModalBottomSheet(
-
                     onDismissRequest = {
-                        showBottomSheet=false
+                        showBottomSheet = false
                     },
-
                     sheetState = sheetState,
-
                     containerColor = Color.White
 
-                ){
-
-
+                ) {
                     Column(
-
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
 
-                    ){
-
-
-
+                    ) {
                         TaskTitleTextField(
-
                             value = state.title,
-
                             onValueChange = {
 
                                 viewModel.onIntent(
                                     TodoIntent.TitleChanged(it)
                                 )
                             },
-
-                            hint = "Task title..."
+                            hint = "Task title...",
+                            onCheckedChange = { viewModel.onIntent(TodoIntent.CompletedChanged(it)) },
+                            isCompleted = state.isCompleted
 
                         )
-
-
 
                         Spacer(
                             Modifier.height(10.dp)
                         )
-
-
-
                         SheetTextField(
-
                             value = state.description,
-
                             onValueChange = {
-
                                 viewModel.onIntent(
                                     TodoIntent.DescriptionChanged(it)
                                 )
                             },
-
                             hint = "Task description..."
-
                         )
-
-
-
                         Spacer(
                             Modifier.height(10.dp)
                         )
 
-
-
                         Row(
-
                             modifier = Modifier.fillMaxWidth(),
-
                             horizontalArrangement = Arrangement.Center
-
-                        ){
+                        ) {
 
                             CustomSheetButton(
-
                                 text = "Date",
-
                                 icon = R.drawable.calender_ic,
-
                                 onClick = {
-                                    showDatePicker=true
-                                }
+                                    showDatePicker = true
+                                },
                             )
-
-
                             Spacer(
                                 Modifier.width(10.dp)
                             )
 
-
                             CustomSheetButton(
-
                                 text = "Time",
-
                                 icon = R.drawable.clock_ic,
 
                                 onClick = {
-                                    showTimePicker=true
+                                    showTimePicker = true
                                 }
                             )
                         }
@@ -380,22 +327,15 @@ fun TasksScreen(
                             Modifier.height(30.dp)
                         )
 
-
-
                         Row(
-
                             modifier = Modifier.fillMaxWidth(),
-
                             horizontalArrangement = Arrangement.Center
 
-                        ){
-
-
-
+                        ) {
                             Button(
 
                                 onClick = {
-                                    showBottomSheet=false
+                                    showBottomSheet = false
                                 },
 
                                 border = BorderStroke(
@@ -412,7 +352,7 @@ fun TasksScreen(
                                     45.dp
                                 )
 
-                            ){
+                            ) {
 
                                 Text(
                                     "Cancel",
@@ -420,24 +360,17 @@ fun TasksScreen(
                                 )
                             }
 
-
-
                             Spacer(
                                 Modifier.width(10.dp)
                             )
 
-
-
                             Button(
-
                                 onClick = {
 
                                     viewModel.onIntent(
                                         TodoIntent.SaveTodo
                                     )
-
                                 },
-
                                 modifier = Modifier.size(
                                     170.dp,
                                     45.dp
@@ -448,7 +381,7 @@ fun TasksScreen(
                                         colorResource(R.color.btn_border_color)
                                 )
 
-                            ){
+                            ) {
 
                                 Text(
                                     "Create",

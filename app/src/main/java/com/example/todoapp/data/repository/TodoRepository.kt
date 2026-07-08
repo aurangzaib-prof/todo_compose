@@ -7,7 +7,7 @@ interface TodoRepository {
 
     suspend fun insertTodo(todo: TodoEntity)
 
-    fun getTodos(): Flow<List<TodoEntity>>
+    fun getAllTodos(): Flow<List<TodoEntity>>
 
     suspend fun deleteTodo(todo: TodoEntity)
 

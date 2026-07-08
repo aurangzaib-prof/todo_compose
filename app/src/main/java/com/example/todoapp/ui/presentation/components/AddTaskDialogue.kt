@@ -4,11 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,9 +35,13 @@ import androidx.compose.ui.window.Dialog
 import com.example.todoapp.R
 import java.time.Instant
 import java.time.ZoneId
+
 @Preview(showBackground = true)
 @Composable
-fun GoogleDatePicker() {
+fun GoogleDatePicker(
+    modifier: Modifier = Modifier,
+    onDateSelected: (Long) -> Unit = {},
+) {
     var showPicker by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     val datePickerState = rememberDatePickerState()
@@ -54,7 +56,7 @@ fun GoogleDatePicker() {
 
         Text(
             "Set Task for date", fontSize = 18.sp,
-            modifier = Modifier.padding(10.dp, top = 20.dp)
+            modifier = Modifier.padding(10.dp, top = 20.dp), color = Color.Black
         )
 
         Row(

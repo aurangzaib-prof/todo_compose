@@ -14,7 +14,7 @@ interface TodoDao {
     suspend fun insertTodo(todo: TodoEntity)
 
     @Query("SELECT * FROM todos")
-    fun getTodos(): Flow<List<TodoEntity>>
+    fun getAllTodos(): Flow<List<TodoEntity>>
 
     @Delete
     suspend fun deleteTodo(todo: TodoEntity)

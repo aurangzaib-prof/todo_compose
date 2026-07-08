@@ -1,8 +1,10 @@
 package com.example.todoapp.ui.presentation.todo
 
 import com.example.todoapp.base.UiState
+import com.example.todoapp.data.local.room.todo_database.TodoEntity
 
 data class TodoState(
+    val todos: List<TodoEntity> = emptyList(),
     val title: String = "",
     val description: String = "",
     val isCompleted: Boolean = false,

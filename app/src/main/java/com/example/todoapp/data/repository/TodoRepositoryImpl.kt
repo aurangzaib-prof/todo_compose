@@ -12,8 +12,8 @@ class TodoRepositoryImpl(
         todoDao.insertTodo(todo)
     }
 
-    override fun getTodos(): Flow<List<TodoEntity>> {
-        return todoDao.getTodos()
+    override fun getAllTodos(): Flow<List<TodoEntity>> {
+        return todoDao.getAllTodos()
     }
 
     override suspend fun deleteTodo(todo: TodoEntity) {

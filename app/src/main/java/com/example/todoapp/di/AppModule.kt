@@ -9,46 +9,55 @@ import com.example.todoapp.ui.presentation.onboarding.OnboardingViewModel
 import com.example.todoapp.ui.presentation.signup.SignupViewModel
 import com.example.todoapp.ui.presentation.splash.SplashViewModel
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.todoapp.base.BaseViewModel
+import com.example.todoapp.data.local.room.todo_database.TodoDatabase
 import com.example.todoapp.data.repository.TodoRepository
 import com.example.todoapp.data.repository.TodoRepositoryImpl
 import com.example.todoapp.domain.usecase.AddTodoUseCase
+import com.example.todoapp.domain.usecase.GetAllTodosUseCase
+import com.example.todoapp.ui.presentation.calender_screen.CalenderViewModel
 import com.example.todoapp.ui.presentation.task_screen.TodoViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 
 private val android.content.Context.dataStore by preferencesDataStore(name = "settings")
-
 val appModule = module {
-    single { androidContext().dataStore }
     single { PreferenceManager(get()) }
+    single { androidContext().dataStore }
     single {
         Room.databaseBuilder(
             androidContext(),
             AuthDatabase::class.java,
-            "todo_db"
+            "auth_db"
         ).build()
     }
 
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            TodoDatabase::class.java,
+            "todo_db"
+        ).build()
+    }
     single { get<AuthDatabase>().userDao() }
-
-    singleOf (::AuthRepository )
-
-    viewModel { SplashViewModel(get()) }
-    viewModel { OnboardingViewModel() }
-    viewModel { LoginViewModel(get(), get()) }
-    viewModelOf( ::LoginViewModel)
-    viewModel { SignupViewModel(get(), get()) }
-    viewModel { TodoViewModel(get()) }
+    single { get<TodoDatabase>().todoDao() }
+    singleOf(::AuthRepository)
+    viewModelOf(::SplashViewModel)
+    viewModelOf(::OnboardingViewModel)
+    viewModelOf(::LoginViewModel)
+    viewModelOf(::LoginViewModel)
+    viewModelOf(::SignupViewModel)
+    viewModelOf(::TodoViewModel)
+    viewModelOf(::CalenderViewModel)
 
     single<TodoRepository> {
         TodoRepositoryImpl(get())
     }
-
     factory {
         AddTodoUseCase(get())
+    }
+    factory {
+        GetAllTodosUseCase(get())
     }
 }
