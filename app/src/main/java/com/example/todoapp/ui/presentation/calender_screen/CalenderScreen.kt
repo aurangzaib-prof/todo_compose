@@ -40,9 +40,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.todoapp.R
-import com.example.todoapp.ui.presentation.components.GoogleDatePicker
+import com.example.todoapp.ui.presentation.components.AddTaskDialogue
 import com.example.todoapp.ui.presentation.todo.TodoIntent
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import org.koin.androidx.compose.koinViewModel
@@ -70,12 +71,17 @@ fun CalenderScreen(
         firstVisibleMonth = currentMonth
     )
 
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
 
     var showDatePicker by remember {
         mutableStateOf(false)
     }
 
     val datePickerState = rememberDatePickerState()
+    var title by remember {
+        mutableStateOf("")
+    }
 
 
     Column(
@@ -167,14 +173,23 @@ fun CalenderScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         Column(modifier = Modifier.padding(10.dp)) {
-            GoogleDatePicker()
+            AddTaskDialogue(
+                onValueChange = {
+                    viewModel.onIntent(TodoIntent.TitleChanged(it))
+                },
+                value = state.title,
+                saveClicked = {
+                    viewModel.onIntent(TodoIntent.SaveTodo)
+                },
+                onCheckedChange = {
+                    viewModel.onIntent(TodoIntent.CompletedChanged(it))
+                },
+                isCompleted = state.isCompleted
+            )
             Spacer(modifier = Modifier.height(20.dp))
             Button(
                 onClick = {
-
-                        showDatePicker = true
-
-
+                    showDatePicker = true
                 },
                 modifier = Modifier
                     .height(height = 50.dp)

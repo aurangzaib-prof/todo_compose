@@ -43,7 +43,7 @@ class SignupViewModel(
         viewModelScope.launch {
             val result = authRepository.register(authEntity)
             if (result.isSuccess) {
-                preferenceManager.saveLogin(true)
+                preferenceManager.saveLogin(true, currentState.email)
                 sendEffect(SignupEffect.NavigateToHome)
             } else {
                 updateState {

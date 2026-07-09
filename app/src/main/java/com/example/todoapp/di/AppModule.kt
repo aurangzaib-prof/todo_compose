@@ -16,7 +16,9 @@ import com.example.todoapp.data.repository.TodoRepository
 import com.example.todoapp.data.repository.TodoRepositoryImpl
 import com.example.todoapp.domain.usecase.AddTodoUseCase
 import com.example.todoapp.domain.usecase.GetAllTodosUseCase
+import com.example.todoapp.domain.usecase.UpdateTodoUseCase
 import com.example.todoapp.ui.presentation.calender_screen.CalenderViewModel
+import com.example.todoapp.ui.presentation.home_screen.HomeViewModel
 import com.example.todoapp.ui.presentation.task_screen.TodoViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -50,12 +52,16 @@ val appModule = module {
     viewModelOf(::SignupViewModel)
     viewModelOf(::TodoViewModel)
     viewModelOf(::CalenderViewModel)
+    viewModelOf(::HomeViewModel)
 
     single<TodoRepository> {
         TodoRepositoryImpl(get())
     }
     factory {
         AddTodoUseCase(get())
+    }
+    factory {
+        UpdateTodoUseCase(get())
     }
     factory {
         GetAllTodosUseCase(get())

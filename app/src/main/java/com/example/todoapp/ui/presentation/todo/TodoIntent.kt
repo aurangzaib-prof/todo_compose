@@ -1,6 +1,8 @@
 package com.example.todoapp.ui.presentation.todo
 
 import com.example.todoapp.base.UiIntent
+import com.example.todoapp.data.local.room.todo_database.TodoEntity
+import com.example.todoapp.domain.model.Todo
 
 
 sealed interface TodoIntent : UiIntent {
@@ -24,7 +26,7 @@ sealed interface TodoIntent : UiIntent {
 
     // Date picker
     data class DateSelected(
-        val date: Long
+        val date: Long?
     ) : TodoIntent
 
 
@@ -36,7 +38,9 @@ sealed interface TodoIntent : UiIntent {
 
     // Button actions
     data object SaveTodo : TodoIntent
-
+    data class UpdateTodo(
+        val todo: TodoEntity
+    ) : TodoIntent
 
     data object Cancel : TodoIntent
 }

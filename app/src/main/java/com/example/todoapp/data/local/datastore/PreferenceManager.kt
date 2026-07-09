@@ -10,12 +10,15 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
+import androidx.datastore.preferences.core.stringPreferencesKey
+
 class PreferenceManager(
     private val dataStore: DataStore<Preferences>
 ) {
     companion object {
         private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
+        private val USER_EMAIL = stringPreferencesKey("user_email")
     }
 
     suspend fun saveOnboardingCompleted(value: Boolean) {
@@ -24,10 +27,25 @@ class PreferenceManager(
         }
     }
 
-    suspend fun saveLogin(value: Boolean) {
+    suspend fun saveLogin(value: Boolean, email: String = "") {
         dataStore.edit { preferences ->
             preferences[IS_LOGGED_IN] = value
+            preferences[USER_EMAIL] = email
         }
+    }
+
+    fun getUserEmail(): Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[USER_EMAIL] ?: ""
+            }
     }
 
     fun onboardingCompleted(): Flow<Boolean> {
@@ -52,7 +70,7 @@ class PreferenceManager(
                 } else {
                     throw exception
                 }
-            }
+             }
             .map { preferences ->
                 preferences[IS_LOGGED_IN] ?: false
             }

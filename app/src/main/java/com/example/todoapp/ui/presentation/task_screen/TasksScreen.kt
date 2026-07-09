@@ -47,7 +47,7 @@ fun TasksScreen(
     val context = LocalContext.current
 
     var showBottomSheet by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     var showDatePicker by remember {
@@ -245,7 +245,7 @@ fun TasksScreen(
 
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     items(state.todos) { todo ->
-                        TodoCard(todo)
+                        TodoCard(todo, koinViewModel ())
                     }
                 }
             }

@@ -39,7 +39,7 @@ class LoginViewModel(
         viewModelScope.launch {
             val result = authRepository.login(currentState.email, currentState.password) 
             if (result.isSuccess) {
-                preferenceManager.saveLogin(true)
+                preferenceManager.saveLogin(true, currentState.email)
                 sendEffect(LoginEffect.NavigateToHome)
             } else {
                 updateState { it.copy(isLoading = false, error = result.exceptionOrNull()?.message ?: "Login failed") }

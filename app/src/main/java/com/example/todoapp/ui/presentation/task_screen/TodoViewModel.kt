@@ -1,6 +1,5 @@
 package com.example.todoapp.ui.presentation.task_screen
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.base.BaseViewModel
 import com.example.todoapp.data.local.room.todo_database.TodoEntity
@@ -83,6 +82,8 @@ class TodoViewModel(
                     TodoState()
                 }
             }
+
+            else -> {}
         }
     }
 

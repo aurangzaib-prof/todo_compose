@@ -1,5 +1,7 @@
 package com.example.todoapp.ui.presentation.components
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,13 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,24 +29,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.example.todoapp.R
 import java.time.Instant
 import java.time.ZoneId
 
-@Preview(showBackground = true)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun GoogleDatePicker(
-    modifier: Modifier = Modifier,
-    onDateSelected: (Long) -> Unit = {},
-) {
-    var showPicker by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
-    val datePickerState = rememberDatePickerState()
+fun AddTaskDialogue(
+    value: String,
+    onValueChange: (String) -> Unit,
+    isCompleted: Boolean = false,
+    onCheckedChange: (Boolean) -> Unit = {},
+    saveClicked: () -> Unit = {},
 
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -55,7 +56,7 @@ fun GoogleDatePicker(
     ) {
 
         Text(
-            "Set Task for date", fontSize = 18.sp,
+            "Set Task", fontSize = 18.sp,
             modifier = Modifier.padding(10.dp, top = 20.dp), color = Color.Black
         )
 
@@ -67,8 +68,9 @@ fun GoogleDatePicker(
             horizontalArrangement = Arrangement.Center
         ) {
             OutlinedTextField(
-                value = "",
-                onValueChange = { },
+                value = value,
+                onValueChange =
+                    onValueChange,
                 shape = RoundedCornerShape(1.dp),
                 placeholder =
                     {
@@ -91,9 +93,21 @@ fun GoogleDatePicker(
                     unfocusedBorderColor = Color.Transparent
                 ),
 
+                leadingIcon = {
+                    Checkbox(
+                        isCompleted,
+                        onCheckedChange = onCheckedChange,
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Color.White,
+                            uncheckedColor = Color.White
+                        )
+                    )
+                },
+
                 )
             Button(
-                onClick = {},
+                onClick =
+                    saveClicked,
                 modifier = Modifier
                     .height(height = 50.dp)
                     .padding(end = 15.dp)
@@ -108,38 +122,6 @@ fun GoogleDatePicker(
                 )
             }
         }
-
-
-        Text(text = selectedDate?.let {
-            Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate().toString()
-        } ?: "")
     }
 
-    if (showPicker) {
-        Dialog(onDismissRequest = { showPicker = false }) {
-
-            Surface(
-                shape = MaterialTheme.shapes.large
-            ) {
-                Column {
-                    DatePicker(
-                        state = datePickerState
-                    )
-
-                    Row {
-                        TextButton(onClick = { showPicker = false }) {
-                            Text("Cancel")
-                        }
-
-                        TextButton(onClick = {
-                            selectedDate = datePickerState.selectedDateMillis
-                            showPicker = false
-                        }) {
-                            Text("OK")
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

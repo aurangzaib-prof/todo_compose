@@ -1,4 +1,4 @@
-package com.example.todoapp.ui.presentation.home
+package com.example.todoapp.ui.presentation.home_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,20 +18,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todoapp.R
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import org.koin.androidx.compose.koinViewModel
 
-@Preview(showBackground = true)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel()
+) {
+    val state by viewModel.uiState.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -56,13 +60,13 @@ fun HomeScreen() {
 
             Column(modifier = Modifier.offset(y = 6.dp)) {
                 Text(
-                    text = "Aurang Zaib",
+                    text = state.username.ifEmpty { "User" },
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "aurangzaibppc@gmail.com",
+                    text = state.email.ifEmpty { "email@example.com" },
                     color = Color.White.copy(alpha = 0.7f),
                     fontSize = 14.sp
                 )
@@ -78,8 +82,54 @@ fun HomeScreen() {
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(20.dp)
+    ) {
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.home_icon),
+                contentDescription = "User Logo",
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(modifier = Modifier.offset(y = 6.dp)) {
+                Text(
+                    text = "Preview User",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "preview@example.com",
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontSize = 14.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        Text(
+            text = "Incomplete Task!",
+            color = Color.White,
+            fontSize = 18.sp
+        )
+    }
 }
