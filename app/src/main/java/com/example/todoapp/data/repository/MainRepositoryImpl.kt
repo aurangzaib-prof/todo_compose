@@ -1,19 +1,41 @@
 package com.example.todoapp.data.repository
 
-import com.example.todoapp.data.local.room.auth_database.AuthEntity
 import com.example.todoapp.data.local.room.auth_database.AuthDao
+import com.example.todoapp.data.local.room.auth_database.AuthEntity
 import com.example.todoapp.data.local.room.auth_database.User
 import com.example.todoapp.data.local.room.auth_database.toUser
+import com.example.todoapp.data.local.room.todo_database.TodoDao
 import com.example.todoapp.data.local.room.todo_database.TodoEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 
-open class AuthRepository(
+class MainRepositoryImpl(
+    private val todoDao: TodoDao,
     private val authDao: AuthDao
-) {
+) : MainRepository {
 
-    open suspend fun register(authEntity: AuthEntity): Result<Unit> {
+    //------------------TODO Task Dao Section------------------
 
+    override suspend fun insertTodo(todo: TodoEntity) {
+        todoDao.insertTodo(todo)
+    }
+
+    override fun getAllTodos(): Flow<List<TodoEntity>> {
+        return todoDao.getAllTodos()
+    }
+
+    override suspend fun deleteTodo(todo: TodoEntity) {
+        todoDao.deleteTodo(todo)
+    }
+
+    override suspend fun updateTodo(todo: TodoEntity) {
+        todoDao.updateTodo(todo)
+    }
+
+
+    //------------------TODO Auth Dao Section------------------
+
+    override suspend fun register(authEntity: AuthEntity): Result<Unit> {
         return try {
             authDao.registerUser(authEntity)
             Result.success(Unit)
@@ -23,12 +45,11 @@ open class AuthRepository(
         }
     }
 
-
-    open suspend fun getUserByEmail(email: String): AuthEntity? {
+    override suspend fun getUserByEmail(email: String): AuthEntity? {
         return authDao.getUserByEmail(email)
     }
 
-    open suspend fun login(
+    override suspend fun login(
         email: String,
         password: String
     ): Result<AuthEntity> {
@@ -42,12 +63,10 @@ open class AuthRepository(
         }
     }
 
-
-    open suspend fun getUser(): User? {
-
+    override suspend fun getUser(): User? {
         return authDao.getUser()
             .firstOrNull()
             ?.toUser()
-
     }
+
 }

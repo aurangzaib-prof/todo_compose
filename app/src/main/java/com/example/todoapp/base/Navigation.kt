@@ -16,3 +16,6 @@ object Signup
 
 @Serializable
 object Home
+
+@Serializable
+data class TaskDetail(val todoJson: String)

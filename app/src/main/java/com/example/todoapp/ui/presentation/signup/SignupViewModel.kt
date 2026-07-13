@@ -4,17 +4,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.todoapp.base.BaseViewModel
 import com.example.todoapp.data.local.datastore.PreferenceManager
 import com.example.todoapp.data.local.room.auth_database.AuthEntity
-import com.example.todoapp.data.repository.AuthRepository
+import com.example.todoapp.data.repository.MainRepository
+import com.example.todoapp.ui.extensions.isValidEmail
 import kotlinx.coroutines.launch
 
 class SignupViewModel(
-    private val authRepository: AuthRepository,
+    private val authRepository: MainRepository,
     private val preferenceManager: PreferenceManager
 ) : BaseViewModel<SignupState, SignupIntent, SignupEffect>(
     SignupState()
 ) {
 
-    override fun onIntent(intent: SignupIntent) {
+    override suspend fun onIntent(intent: SignupIntent) {
         when (intent) {
             is SignupIntent.NameChanged -> updateState { it.copy(name = intent.name) }
             is SignupIntent.EmailChanged -> updateState { it.copy(email = intent.email) }
@@ -29,6 +30,11 @@ class SignupViewModel(
     private fun handleSignup() {
         if (currentState.name.isBlank() || currentState.email.isBlank() || currentState.password.isBlank()) {
             updateState { it.copy(error = "Please fill all fields") }
+            return
+        }
+
+        if (!currentState.email.isValidEmail()) {
+            updateState { it.copy(error = "Please enter a valid email") }
             return
         }
 

@@ -3,17 +3,38 @@ package com.example.todoapp.ui.presentation.home_screen
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.base.BaseViewModel
 import com.example.todoapp.data.local.datastore.PreferenceManager
-import com.example.todoapp.data.repository.AuthRepository
+import com.example.todoapp.data.repository.MainRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val authRepository: AuthRepository,
-    private val preferenceManager: PreferenceManager
+    private val authRepository: MainRepository,
+    private val preferenceManager: PreferenceManager,
 ) : BaseViewModel<HomeState, HomeIntent, HomeEffect>(HomeState()) {
 
     init {
         loadUserData()
+        getAllTodos()
+    }
+
+    private fun getAllTodos() {
+        viewModelScope.launch {
+            authRepository.getAllTodos().collect { todos ->
+                val completed = todos.filter { it.isCompleted }
+                    .sortedByDescending { it.id }
+                    .take(3)
+
+                val incompleted = todos.filter { !it.isCompleted }
+                    .take(3)
+
+                updateState { state ->
+                    state.copy(
+                        completedTodos = completed,
+                        incompletedTodos = incompleted
+                    )
+                }
+            }
+        }
     }
 
     private fun loadUserData() {
@@ -34,6 +55,11 @@ class HomeViewModel(
         }
     }
 
-    override fun onIntent(intent: HomeIntent) {
+    override suspend fun onIntent(intent: HomeIntent) {
+        when (intent) {
+            is HomeIntent.TodoClicked -> {
+                sendEffect(HomeEffect.NavigateToDetails(intent.todo))
+            }
+        }
     }
 }

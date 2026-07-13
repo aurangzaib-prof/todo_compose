@@ -3,17 +3,16 @@ package com.example.todoapp.ui.presentation.task_screen
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.base.BaseViewModel
 import com.example.todoapp.data.local.room.todo_database.TodoEntity
-import com.example.todoapp.domain.usecase.AddTodoUseCase
-import com.example.todoapp.domain.usecase.GetAllTodosUseCase
+import com.example.todoapp.data.repository.MainRepository
 import com.example.todoapp.ui.presentation.todo.TodoEffect
 import com.example.todoapp.ui.presentation.todo.TodoIntent
 import com.example.todoapp.ui.presentation.todo.TodoState
-import com.example.todoapp.ui.utils.Utils.formatDate
+import com.example.todoapp.ui.extensions.toFormattedDate
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class TodoViewModel(
-    private val addTodoUseCase: AddTodoUseCase,
-    private val getAllTodosUseCase: GetAllTodosUseCase
+    private val repository: MainRepository
 ) : BaseViewModel<TodoState, TodoIntent, TodoEffect>(
     TodoState()
 ) {
@@ -22,7 +21,7 @@ class TodoViewModel(
         getAllTodos()
     }
 
-    override fun onIntent(intent: TodoIntent) {
+    override suspend fun onIntent(intent: TodoIntent) {
 
         when (intent) {
 
@@ -50,7 +49,7 @@ class TodoViewModel(
                 }
 
                 sendEffect(
-                    TodoEffect.ShowToast("Date selected: ${formatDate(intent.date)}")
+                    TodoEffect.ShowToast("Date selected: ${intent.date.toFormattedDate()}")
                 )
             }
 
@@ -72,8 +71,31 @@ class TodoViewModel(
                 }
             }
 
+            is TodoIntent.SearchQueryChanged -> {
+                updateState {
+                    it.copy(searchQuery = intent.query)
+                }
+            }
+
             TodoIntent.SaveTodo -> {
                 saveTodo()
+            }
+
+            TodoIntent.DeleteTodo -> {
+                deleteTodo()
+            }
+
+            is TodoIntent.SetTodoForEdit -> {
+                updateState {
+                    it.copy(
+                        id = intent.todo.id,
+                        title = intent.todo.title,
+                        description = intent.todo.description,
+                        isCompleted = intent.todo.isCompleted,
+                        selectedDate = intent.todo.date,
+                        selectedTime = intent.todo.time
+                    )
+                }
             }
 
 
@@ -89,21 +111,32 @@ class TodoViewModel(
 
     private fun getAllTodos() {
         viewModelScope.launch {
-            getAllTodosUseCase().collect { todos ->
+            combine(repository.getAllTodos(), uiState) { todos, state ->
+                if (state.searchQuery.isBlank()) {
+                    todos
+                } else {
+                    todos.filter {
+                        it.title.contains(state.searchQuery, ignoreCase = true) ||
+                                (it.description?.contains(state.searchQuery, ignoreCase = true) ?: false)
+                    }
+                }
+            }.collect { filteredTodos ->
                 updateState { state ->
                     state.copy(
-                        todos = todos
+                        todos = filteredTodos
                     )
                 }
             }
         }
     }
 
+
     private fun saveTodo() {
 
         val todo = TodoEntity(
+            id = currentState.id ?: 0,
             title = currentState.title,
-            description = currentState.description,
+            description = currentState.description ?: "",
             isCompleted = currentState.isCompleted,
             date = currentState.selectedDate,
             time = currentState.selectedTime
@@ -126,8 +159,30 @@ class TodoViewModel(
                 }
             }
 
-            addTodoUseCase(todo)
-            sendEffect(TodoEffect.ShowToast("Todo saved successfully"))
+            if (currentState.id != null) {
+                repository.updateTodo(todo)
+                sendEffect(TodoEffect.ShowToast("Todo updated successfully"))
+            } else {
+                repository.insertTodo(todo)
+                sendEffect(TodoEffect.ShowToast("Todo saved successfully"))
+            }
+            updateState { TodoState() }
+        }
+    }
+
+    private fun deleteTodo() {
+        val todo = TodoEntity(
+            id = currentState.id ?: return,
+            title = currentState.title,
+            description = currentState.description ?: "",
+            isCompleted = currentState.isCompleted,
+            date = currentState.selectedDate,
+            time = currentState.selectedTime
+        )
+        viewModelScope.launch {
+            repository.deleteTodo(todo)
+            sendEffect(TodoEffect.ShowToast("Todo deleted successfully"))
+            updateState { TodoState() }
         }
     }
 }

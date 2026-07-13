@@ -17,8 +17,15 @@ import com.example.todoapp.ui.navigation.BottomNavItem
 import androidx.compose.ui.graphics.Color
 
 import androidx.compose.ui.unit.dp
+import com.example.todoapp.ui.presentation.home.MainStates
+
 @Composable
-fun BottomBar(navController: NavHostController) {
+fun BottomBar(
+    state: MainStates,
+    onTabClicked : ( BottomNavItem) -> Unit
+    /*navController: NavHostController*/
+) {
+
 
     val items = listOf(
         BottomNavItem.Home,
@@ -32,17 +39,22 @@ fun BottomBar(navController: NavHostController) {
         contentColor = Color.White,
         tonalElevation = 0.dp
     ) {
-
+/*
         val currentDestination =
-            navController.currentBackStackEntryAsState().value?.destination
+            navController.currentBackStackEntryAsState().value?.destination*/
 
         items.forEach { item ->
 
             NavigationBarItem(
-                selected = currentDestination?.route == item.route,
+                selected = /*currentDestination?.route == item.route*/ item == state.selectedTab,
 
                 onClick = {
-                    navController.navigate(item.route) {
+
+                    onTabClicked(
+                        item
+                    )
+
+                 /*   navController.navigate(item.route) {
 
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
@@ -50,7 +62,7 @@ fun BottomBar(navController: NavHostController) {
 
                         launchSingleTop = true
                         restoreState = true
-                    }
+                    }*/
                 },
 
                 icon = {

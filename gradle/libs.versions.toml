@@ -10,7 +10,7 @@ kotlin = "2.1.0"
 composeBom = "2026.02.01"
 
 koinVersion = "4.0.2"
-navigationCompose = "2.8.4"
+navigationCompose = "2.8.7"
 kotlinxSerializationVersion = "1.7.3"
 foundation = "1.9.4"
 ksv = "2.1.0"

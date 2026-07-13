@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -32,6 +33,7 @@ import com.example.todoapp.base.Signup
 import com.example.todoapp.ui.presentation.components.CustomAuthButton
 import com.example.todoapp.ui.presentation.components.CustomTextField
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -49,6 +51,8 @@ fun LoginScreen(
     navController: NavHostController,
     viewModel: LoginViewModel = koinViewModel()
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     val state by viewModel.uiState.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -69,7 +73,12 @@ fun LoginScreen(
 
     LoginContent(
         state = state,
-        onIntent = { viewModel.onIntent(it) }
+        onIntent = {
+            coroutineScope.launch {
+                viewModel.onIntent(it)
+
+            }
+        }
     )
 }
 

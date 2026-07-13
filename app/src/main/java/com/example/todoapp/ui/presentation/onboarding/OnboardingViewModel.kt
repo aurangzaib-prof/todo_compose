@@ -6,7 +6,7 @@ class OnboardingViewModel : BaseViewModel<OnboardingState, OnboardingIntent, Onb
     OnboardingState()
 ) {
 
-    override fun onIntent(intent: OnboardingIntent) {
+    override suspend fun onIntent(intent: OnboardingIntent) {
         when (intent) {
             OnboardingIntent.NextPage -> handleNextPage()
         }

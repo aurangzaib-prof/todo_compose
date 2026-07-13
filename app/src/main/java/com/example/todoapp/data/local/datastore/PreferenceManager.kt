@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 import androidx.datastore.preferences.core.stringPreferencesKey
-
 class PreferenceManager(
     private val dataStore: DataStore<Preferences>
 ) {
@@ -19,12 +18,6 @@ class PreferenceManager(
         private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
         private val USER_EMAIL = stringPreferencesKey("user_email")
-    }
-
-    suspend fun saveOnboardingCompleted(value: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[ONBOARDING_COMPLETED] = value
-        }
     }
 
     suspend fun saveLogin(value: Boolean, email: String = "") {

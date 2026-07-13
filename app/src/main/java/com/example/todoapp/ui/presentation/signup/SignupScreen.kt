@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -28,6 +29,7 @@ import com.example.todoapp.base.Home
 import com.example.todoapp.base.Login
 import com.example.todoapp.ui.presentation.components.CustomAuthButton
 import com.example.todoapp.ui.presentation.components.CustomTextField
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SignupScreen(
@@ -35,6 +37,8 @@ fun SignupScreen(
     viewModel: SignupViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -112,7 +116,12 @@ fun SignupScreen(
             Spacer(modifier = Modifier.padding(top = 20.dp))
             CustomTextField(
                 value = state.name,
-                onValueChange = { viewModel.onIntent(SignupIntent.NameChanged(it)) },
+                onValueChange = {
+                    coroutineScope.launch {
+
+                    viewModel.onIntent(SignupIntent.NameChanged(it))
+                    }
+                                },
                 hint = "Name",
                 leadingIcon = {
                     Icon(
@@ -124,7 +133,12 @@ fun SignupScreen(
 
             CustomTextField(
                 value = state.email,
-                onValueChange = { viewModel.onIntent(SignupIntent.EmailChanged(it)) },
+                onValueChange = {
+                    coroutineScope.launch {
+
+                    viewModel.onIntent(SignupIntent.EmailChanged(it))
+                    }
+                                },
                 hint = "Email",
                 leadingIcon = {
                     Icon(
@@ -136,7 +150,8 @@ fun SignupScreen(
             Spacer(modifier = Modifier.padding(top = 17.dp))
             CustomTextField(
                 value = state.password,
-                onValueChange = { viewModel.onIntent(SignupIntent.PasswordChanged(it)) },
+                onValueChange = {
+                    coroutineScope.launch { viewModel.onIntent(SignupIntent.PasswordChanged(it)) }},
                 hint = "Password",
                 leadingIcon = {
                     Icon(
@@ -154,7 +169,12 @@ fun SignupScreen(
                 )
             } else {
                 CustomAuthButton(
-                    onClick = { viewModel.onIntent(SignupIntent.SignupClicked) },
+                    onClick = {
+                        coroutineScope.launch {
+
+                        viewModel.onIntent(SignupIntent.SignupClicked)
+                        }
+                              },
                     modifier = Modifier.fillMaxWidth(),
                     text = "Sign Up"
                 )
@@ -181,7 +201,10 @@ fun SignupScreen(
                     modifier = Modifier
                         .padding(start = 5.dp)
                         .clickable {
+                            coroutineScope.launch {
+
                             viewModel.onIntent(SignupIntent.SigninClicked)
+                            }
                         },
                 )
             }

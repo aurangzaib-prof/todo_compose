@@ -3,17 +3,18 @@ package com.example.todoapp.ui.presentation.login
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.base.BaseViewModel
 import com.example.todoapp.data.local.datastore.PreferenceManager
-import com.example.todoapp.data.repository.AuthRepository
+import com.example.todoapp.data.repository.MainRepository
+import com.example.todoapp.ui.extensions.isValidEmail
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val authRepository: AuthRepository,
+    private val authRepository: MainRepository,
     private val preferenceManager: PreferenceManager
 ) : BaseViewModel<LoginState, LoginIntent, LoginEffect>(
     LoginState()
 ) {
 
-    override fun onIntent(intent: LoginIntent) {
+    override suspend fun onIntent(intent: LoginIntent) {
         when (intent) {
             is LoginIntent.EmailChanged -> {
                 updateState { it.copy(email = intent.email) }
@@ -31,6 +32,11 @@ class LoginViewModel(
     private fun handleLogin() {
         if (currentState.email.isBlank() || currentState.password.isBlank()) {
             updateState { it.copy(error = "Please fill all fields") }
+            return
+        }
+
+        if (!currentState.email.isValidEmail()) {
+            updateState { it.copy(error = "Please enter a valid email") }
             return
         }
 

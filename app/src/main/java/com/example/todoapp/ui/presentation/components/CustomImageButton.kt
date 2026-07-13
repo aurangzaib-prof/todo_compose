@@ -46,7 +46,7 @@ fun CustomImageButton(
 
     Box(
         modifier = modifier
-            .size(140.dp, 110.dp)
+            .size(130.dp, 100.dp)
             .clip(shape)
             .clickable(
                 onClick = onClick,
@@ -60,7 +60,6 @@ fun CustomImageButton(
             )
     ) {
 
-        // Glow
         Box(
             modifier = Modifier
                 .matchParentSize()
@@ -72,7 +71,6 @@ fun CustomImageButton(
                 },
         )
 
-        // Card
         Box(
             modifier = Modifier
                 .fillMaxSize()

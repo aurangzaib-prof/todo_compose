@@ -10,5 +10,5 @@ interface UiEffect
 interface MviViewModel<S : UiState, I : UiIntent, E : UiEffect> {
     val uiState: StateFlow<S>
     val effect: SharedFlow<E>
-    fun onIntent(intent: I)
+    suspend fun onIntent(intent: I)
 }

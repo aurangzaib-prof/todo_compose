@@ -12,33 +12,29 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel
-<
-        STATE : UiState,
-        INTENT : UiIntent,
-        EFFECT : UiEffect
-        >
+<S : UiState, I : UiIntent, E : UiEffect>
     (
-    initialState: STATE
-) : ViewModel(), MviViewModel<STATE, INTENT, EFFECT> {
+    initialState: S
+) : ViewModel(), MviViewModel<S, I, E> {
 
     private val _uiState = MutableStateFlow(initialState)
-    override val uiState: StateFlow<STATE> = _uiState.asStateFlow()
+    override val uiState: StateFlow<S> = _uiState.asStateFlow()
 
-    private val _effect = MutableSharedFlow<EFFECT>()
-    override val effect: SharedFlow<EFFECT> = _effect.asSharedFlow()
+    private val _effect = MutableSharedFlow<E>()
+    override val effect: SharedFlow<E> = _effect.asSharedFlow()
 
-    protected val currentState: STATE
+    protected val currentState: S
         get() = _uiState.value
 
-    protected fun updateState(reducer: (STATE) -> STATE) {
+    protected fun updateState(reducer: (S) -> S) {
         _uiState.update(reducer)
     }
 
-    protected fun sendEffect(effect: EFFECT) {
+    protected fun sendEffect(effect: E) {
         viewModelScope.launch {
             _effect.emit(effect)
         }
     }
 
-    abstract override fun onIntent(intent: INTENT)
+    abstract override suspend fun onIntent(intent: I)
 }

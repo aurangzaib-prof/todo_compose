@@ -6,8 +6,6 @@ import com.example.todoapp.domain.model.Todo
 
 
 sealed interface TodoIntent : UiIntent {
-
-    // Text field changes
     data class TitleChanged(
         val title: String
     ) : TodoIntent
@@ -16,31 +14,23 @@ sealed interface TodoIntent : UiIntent {
     data class DescriptionChanged(
         val description: String
     ) : TodoIntent
-
-
-    // Checkbox change
     data class CompletedChanged(
         val isCompleted: Boolean
     ) : TodoIntent
 
-
-    // Date picker
     data class DateSelected(
         val date: Long?
     ) : TodoIntent
-
-
-    // Time picker
     data class TimeSelected(
         val time: String
     ) : TodoIntent
-
-
-    // Button actions
+    data class SearchQueryChanged(val query: String) : TodoIntent
     data object SaveTodo : TodoIntent
+    data object DeleteTodo : TodoIntent
     data class UpdateTodo(
         val todo: TodoEntity
     ) : TodoIntent
+    data class SetTodoForEdit(val todo: TodoEntity) : TodoIntent
 
     data object Cancel : TodoIntent
 }

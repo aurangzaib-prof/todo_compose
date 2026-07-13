@@ -1,18 +1,15 @@
 package com.example.todoapp.ui.presentation.task_screen
 
+import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -25,17 +22,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
 import com.example.todoapp.R
+import com.example.todoapp.base.BaseScreen
 import com.example.todoapp.ui.presentation.components.*
 import com.example.todoapp.ui.presentation.todo.TodoEffect
 import com.example.todoapp.ui.presentation.todo.TodoIntent
-import com.example.todoapp.ui.utils.Utils.formatTime
+import com.example.todoapp.ui.extensions.formatTime
+import com.example.todoapp.ui.extensions.toast
+
+import com.example.todoapp.base.TaskDetail
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Preview(showBackground = true)
 @Composable
 fun showUi() {
     TasksScreen(navController = rememberNavController(), viewModel = koinViewModel())
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,6 +48,8 @@ fun TasksScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
 
     var showBottomSheet by remember {
         mutableStateOf(false)
@@ -73,32 +78,15 @@ fun TasksScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is TodoEffect.ShowToast -> {
-                    Toast.makeText(
-                        context,
-                        effect.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
-
+                    context.toast(effect.message)
                 }
             }
         }
     }
 
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        colorResource(R.color.bg_top_color),
-                        colorResource(R.color.bg_bottom_color)
-                    )
-                )
-            ),
-
+    BaseScreen(
         floatingActionButton = {
-
             FloatingActionButton(
                 onClick = {
                     showBottomSheet = true
@@ -110,104 +98,76 @@ fun TasksScreen(
                     contentDescription = null
                 )
             }
-        },
-        containerColor = Color.Transparent
-
-    ) { padding ->
+        }
+    ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier = Modifier.fillMaxSize()
         ) {
             if (showDatePicker) {
-
                 DatePickerDialog(
-
                     onDismissRequest = {
                         showDatePicker = false
                     },
-
                     confirmButton = {
-
                         TextButton(
                             onClick = {
-                                datePickerState
-                                    .selectedDateMillis
-                                    ?.let {
-
-                                        viewModel.onIntent(
-                                            TodoIntent.DateSelected(it)
-                                        )
+                                datePickerState.selectedDateMillis?.let {
+                                    coroutineScope.launch {
+                                        viewModel.onIntent(TodoIntent.DateSelected(it))
                                     }
+                                }
                                 showDatePicker = false
                             }
                         ) {
                             Text("OK")
                         }
                     },
-
                     dismissButton = {
-
                         TextButton(
                             onClick = {
                                 showDatePicker = false
                             }
                         ) {
-
                             Text("Cancel")
                         }
                     }
-
                 ) {
-
-                    DatePicker(
-                        state = datePickerState
-                    )
+                    DatePicker(state = datePickerState)
                 }
             }
 
             if (showTimePicker) {
-
                 AlertDialog(
-
                     onDismissRequest = {
                         showTimePicker = false
                     },
-
                     confirmButton = {
-
                         TextButton(
                             onClick = {
                                 val time = formatTime(
                                     timePickerState.hour,
                                     timePickerState.minute
                                 )
-
-                                viewModel.onIntent(
-                                    TodoIntent.TimeSelected(time)
-                                )
+                                coroutineScope.launch {
+                                    viewModel.onIntent(TodoIntent.TimeSelected(time))
+                                }
                                 showTimePicker = false
                             }
                         ) {
-
                             Text("OK")
                         }
                     },
-
                     dismissButton = {
                         TextButton(
                             onClick = {
                                 showTimePicker = false
                             }
                         ) {
-
                             Text("Cancel")
                         }
                     },
                     text = {
-                        TimePicker(
-                            state = timePickerState
-                        )
+                        TimePicker(state = timePickerState)
                     }
                 )
             }
@@ -222,7 +182,15 @@ fun TasksScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
-                    CustomSearchBar(query = "", onQueryChange = {}, modifier = Modifier)
+                    CustomSearchBar(
+                        query = state.searchQuery,
+                        onQueryChange = {
+                            coroutineScope.launch {
+                                viewModel.onIntent(TodoIntent.SearchQueryChanged(it))
+                            }
+                        },
+                        modifier = Modifier
+                    )
 
                     SortButton(
                         text = "Sort by",
@@ -245,7 +213,14 @@ fun TasksScreen(
 
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     items(state.todos) { todo ->
-                        TodoCard(todo, koinViewModel ())
+                        TodoCard(
+                            todo,
+                            koinViewModel(),
+                            onClick = {
+                                val todoJson = Uri.encode(Json.encodeToString(todo))
+                                navController.navigate(TaskDetail(todoJson))
+                            }
+                        )
                     }
                 }
             }
@@ -268,13 +243,16 @@ fun TasksScreen(
                         TaskTitleTextField(
                             value = state.title,
                             onValueChange = {
-
-                                viewModel.onIntent(
-                                    TodoIntent.TitleChanged(it)
-                                )
+                                coroutineScope.launch {
+                                    viewModel.onIntent(TodoIntent.TitleChanged(it))
+                                }
                             },
                             hint = "Task title...",
-                            onCheckedChange = { viewModel.onIntent(TodoIntent.CompletedChanged(it)) },
+                            onCheckedChange = {
+                                coroutineScope.launch {
+                                    viewModel.onIntent(TodoIntent.CompletedChanged(it))
+                                }
+                            },
                             isCompleted = state.isCompleted
 
                         )
@@ -283,11 +261,11 @@ fun TasksScreen(
                             Modifier.height(10.dp)
                         )
                         SheetTextField(
-                            value = state.description,
+                            value = state.description ?: "",
                             onValueChange = {
-                                viewModel.onIntent(
-                                    TodoIntent.DescriptionChanged(it)
-                                )
+                                coroutineScope.launch {
+                                    viewModel.onIntent(TodoIntent.DescriptionChanged(it))
+                                }
                             },
                             hint = "Task description..."
                         )
@@ -333,27 +311,21 @@ fun TasksScreen(
 
                         ) {
                             Button(
-
                                 onClick = {
                                     showBottomSheet = false
                                 },
-
                                 border = BorderStroke(
                                     2.dp,
                                     colorResource(R.color.btn_border_color)
                                 ),
-
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.White
                                 ),
-
                                 modifier = Modifier.size(
                                     170.dp,
                                     45.dp
                                 )
-
                             ) {
-
                                 Text(
                                     "Cancel",
                                     color = Color.Black
@@ -366,23 +338,19 @@ fun TasksScreen(
 
                             Button(
                                 onClick = {
-
-                                    viewModel.onIntent(
-                                        TodoIntent.SaveTodo
-                                    )
+                                    coroutineScope.launch {
+                                        viewModel.onIntent(TodoIntent.SaveTodo)
+                                    }
                                 },
                                 modifier = Modifier.size(
                                     170.dp,
                                     45.dp
                                 ),
-
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor =
-                                        colorResource(R.color.btn_border_color)
+                                    colorResource(R.color.btn_border_color)
                                 )
-
                             ) {
-
                                 Text(
                                     "Create",
                                     color = Color.White
@@ -390,11 +358,9 @@ fun TasksScreen(
                             }
                         }
 
-
                         Spacer(
                             Modifier.height(20.dp)
                         )
-
                     }
                 }
             }

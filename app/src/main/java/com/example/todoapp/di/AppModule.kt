@@ -2,8 +2,8 @@ package com.example.todoapp.di
 
 import androidx.room.Room
 import com.example.todoapp.data.local.datastore.PreferenceManager
+import com.example.todoapp.utils.Constants
 import com.example.todoapp.data.local.room.auth_database.AuthDatabase
-import com.example.todoapp.data.repository.AuthRepository
 import com.example.todoapp.ui.presentation.login.LoginViewModel
 import com.example.todoapp.ui.presentation.onboarding.OnboardingViewModel
 import com.example.todoapp.ui.presentation.signup.SignupViewModel
@@ -12,18 +12,16 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.todoapp.data.local.room.todo_database.TodoDatabase
-import com.example.todoapp.data.repository.TodoRepository
-import com.example.todoapp.data.repository.TodoRepositoryImpl
-import com.example.todoapp.domain.usecase.AddTodoUseCase
-import com.example.todoapp.domain.usecase.GetAllTodosUseCase
-import com.example.todoapp.domain.usecase.UpdateTodoUseCase
+import com.example.todoapp.data.repository.MainRepository
+import com.example.todoapp.data.repository.MainRepositoryImpl
 import com.example.todoapp.ui.presentation.calender_screen.CalenderViewModel
+import com.example.todoapp.ui.presentation.home.MainViewModel
 import com.example.todoapp.ui.presentation.home_screen.HomeViewModel
 import com.example.todoapp.ui.presentation.task_screen.TodoViewModel
-import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 
-private val android.content.Context.dataStore by preferencesDataStore(name = "settings")
+private val android.content.Context.dataStore by preferencesDataStore(name = Constants.DATASTORE_NAME)
 val appModule = module {
     single { PreferenceManager(get()) }
     single { androidContext().dataStore }
@@ -31,20 +29,22 @@ val appModule = module {
         Room.databaseBuilder(
             androidContext(),
             AuthDatabase::class.java,
-            "auth_db"
-        ).build()
+            Constants.AUTH_DATABASE_NAME
+        )
+            .build()
     }
 
     single {
         Room.databaseBuilder(
             androidContext(),
             TodoDatabase::class.java,
-            "todo_db"
-        ).build()
+            Constants.TODO_DATABASE_NAME
+        )
+            .fallbackToDestructiveMigration(true)
+            .build()
     }
     single { get<AuthDatabase>().userDao() }
     single { get<TodoDatabase>().todoDao() }
-    singleOf(::AuthRepository)
     viewModelOf(::SplashViewModel)
     viewModelOf(::OnboardingViewModel)
     viewModelOf(::LoginViewModel)
@@ -54,16 +54,11 @@ val appModule = module {
     viewModelOf(::CalenderViewModel)
     viewModelOf(::HomeViewModel)
 
-    single<TodoRepository> {
-        TodoRepositoryImpl(get())
+    single<MainRepository> {
+        MainRepositoryImpl(get(), get())
     }
-    factory {
-        AddTodoUseCase(get())
-    }
-    factory {
-        UpdateTodoUseCase(get())
-    }
-    factory {
-        GetAllTodosUseCase(get())
+
+    viewModel {
+        MainViewModel()
     }
 }

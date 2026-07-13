@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.todoapp.R
 import com.example.todoapp.base.Login
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -29,6 +31,8 @@ fun OnboardingScreen(
     viewModel: OnboardingViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -121,7 +125,11 @@ fun OnboardingScreen(
                         .size(100.dp)
                         .align(Alignment.CenterEnd)
                         .clickable {
+                            coroutineScope.launch {
                             viewModel.onIntent(OnboardingIntent.NextPage)
+
+                            }
+
                         }
                 )
             }
