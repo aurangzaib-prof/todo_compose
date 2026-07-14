@@ -12,13 +12,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel
-<S : UiState, I : UiIntent, E : UiEffect>
-    (
-    initialState: S
-) : ViewModel(), MviViewModel<S, I, E> {
+<S : UiState, I : UiIntent, E : UiEffect>(initialState: S) : ViewModel(), MviViewModel<S, I, E> {
     private val _uiState = MutableStateFlow(initialState)
     override val uiState: StateFlow<S> = _uiState.asStateFlow()
-
     private val _effect = MutableSharedFlow<E>()
     override val effect: SharedFlow<E> = _effect.asSharedFlow()
 

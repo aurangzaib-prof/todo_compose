@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 import androidx.datastore.preferences.core.stringPreferencesKey
+
 class PreferenceManager(
     private val dataStore: DataStore<Preferences>
 ) {
@@ -34,13 +35,10 @@ class PreferenceManager(
                 } else {
                     throw exception
                 }
-            }
-            .map { preferences ->
+            }.map { preferences ->
                 preferences[USER_EMAIL] ?: ""
             }
     }
-
-
     fun isLoggedIn(): Flow<Boolean> {
         return dataStore.data
             .catch { exception ->
@@ -49,8 +47,7 @@ class PreferenceManager(
                 } else {
                     throw exception
                 }
-             }
-            .map { preferences ->
+            }.map { preferences ->
                 preferences[IS_LOGGED_IN] ?: false
             }
     }

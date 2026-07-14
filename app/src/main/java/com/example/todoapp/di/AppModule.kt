@@ -42,7 +42,7 @@ val appModule = module {
         ).fallbackToDestructiveMigration(true)
             .build()
     }
-    single { get<AuthDatabase>().userDao() }
+    single{ get<AuthDatabase>().userDao() }
     single { get<TodoDatabase>().todoDao() }
     viewModelOf(::SplashViewModel)
     viewModelOf(::OnboardingViewModel)
@@ -52,11 +52,9 @@ val appModule = module {
     viewModelOf(::TodoViewModel)
     viewModelOf(::CalenderViewModel)
     viewModelOf(::HomeViewModel)
-
     single<MainRepository> {
         MainRepositoryImpl(get(), get())
     }
-
     viewModel {
         MainViewModel()
     }
